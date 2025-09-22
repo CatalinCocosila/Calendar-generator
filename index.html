@@ -4,33 +4,62 @@
   <meta charset="UTF-8">
   <title>Calendar Generator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="style.css">
+
+  <!-- Libraries for PDF export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
-<body>
-  <div class="controls">
-    <label>Language:
-      <select id="langSelect">
+<body class="bg-gray-50 flex flex-col items-center min-h-screen">
+
+  <!-- Controls -->
+  <div class="controls w-full max-w-4xl flex flex-wrap gap-3 justify-center p-4 bg-white shadow-md rounded-lg">
+    <label class="flex flex-col text-sm font-medium">
+      Language
+      <select id="langSelect" class="mt-1 rounded-md border-gray-300 p-2">
         <option value="en">English</option>
         <option value="fr">Français</option>
       </select>
     </label>
 
-    <select id="monthSelect"></select>
-    <select id="yearSelect"></select>
-    <input type="file" id="headerPhoto" accept="image/*">
+    <select id="monthSelect" class="rounded-md border-gray-300 p-2"></select>
+    <select id="yearSelect" class="rounded-md border-gray-300 p-2"></select>
+    <input type="file" id="headerPhoto" accept="image/*" class="p-2 text-sm">
 
-    <label>Weekdays color: <input type="color" id="weekdaysColor" value="#d8edf5"></label>
-    <label>Month text color: <input type="color" id="monthTextColor" value="#ffffff"></label>
-    <label>Gradient left: <input type="color" id="gradLeft" value="#8e44ad"></label>
-    <label>Gradient right: <input type="color" id="gradRight" value="#e74c3c"></label>
+    <label class="flex flex-col text-sm font-medium">
+      Weekdays color
+      <input type="color" id="weekdaysColor" value="#d8edf5" class="h-10 w-16 p-1">
+    </label>
+    <label class="flex flex-col text-sm font-medium">
+      Month text color
+      <input type="color" id="monthTextColor" value="#ffffff" class="h-10 w-16 p-1">
+    </label>
+    <label class="flex flex-col text-sm font-medium">
+      Gradient left
+      <input type="color" id="gradLeft" value="#8e44ad" class="h-10 w-16 p-1">
+    </label>
+    <label class="flex flex-col text-sm font-medium">
+      Gradient right
+      <input type="color" id="gradRight" value="#e74c3c" class="h-10 w-16 p-1">
+    </label>
 
-    <button onclick="generateCalendar()">Generate</button>
-    <button onclick="downloadPDF()">Download PDF</button>
+    <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+      <button onclick="generateCalendar()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg w-full sm:w-auto text-lg">
+        Generate
+      </button>
+      <button onclick="downloadPDF()" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg w-full sm:w-auto text-lg">
+        Download PDF
+      </button>
+    </div>
   </div>
 
-  <div id="calendarWrapper">
+  <!-- Calendar -->
+  <div id="calendarWrapper" class="mt-4 shadow-xl bg-white">
     <div id="photoContainer">
       <img id="headerImage" src="" alt="">
       <div class="month-banner">
