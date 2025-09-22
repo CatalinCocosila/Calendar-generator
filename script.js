@@ -97,21 +97,21 @@ document.getElementById("headerPhoto").addEventListener("change", e => {
   }
 });
 
-// --- Drag image vertically ---
+// --- Drag image vertically (mouse + touch) ---
 let isDragging = false;
 let startY = 0;
 let startTop = 0;
 
-headerImage.addEventListener("mousedown", e => {
+function startDrag(y) {
   isDragging = true;
-  startY = e.clientY;
+  startY = y;
   startTop = parseInt(headerImage.style.top || "0", 10);
   headerImage.style.cursor = "grabbing";
-});
+}
 
-document.addEventListener("mousemove", e => {
+function doDrag(y) {
   if (isDragging) {
-    const dy = e.clientY - startY;
+    const dy = y - startY;
     let newTop = startTop + dy;
 
     const containerHeight = document.getElementById("photoContainer").offsetHeight;
@@ -128,14 +128,32 @@ document.addEventListener("mousemove", e => {
 
     headerImage.style.top = `${newTop}px`;
   }
-});
+}
 
-document.addEventListener("mouseup", () => {
+function endDrag() {
   if (isDragging) {
     isDragging = false;
     headerImage.style.cursor = "grab";
   }
+}
+
+// Mouse events
+headerImage.addEventListener("mousedown", e => startDrag(e.clientY));
+document.addEventListener("mousemove", e => doDrag(e.clientY));
+document.addEventListener("mouseup", endDrag);
+
+// Touch events
+headerImage.addEventListener("touchstart", e => {
+  if (e.touches.length === 1) {
+    startDrag(e.touches[0].clientY);
+  }
 });
+document.addEventListener("touchmove", e => {
+  if (e.touches.length === 1) {
+    doDrag(e.touches[0].clientY);
+  }
+});
+document.addEventListener("touchend", endDrag);
 
 // --- Generate calendar ---
 function generateCalendar() {
@@ -203,7 +221,7 @@ function downloadPDF() {
   const element = document.getElementById("calendarWrapper");
 
   html2canvas(element, {
-    scale: 3, // 3x resolution (~300dpi)
+    scale: 3, // high resolution (~300dpi)
     useCORS: true
   }).then(canvas => {
     const imgData = canvas.toDataURL("image/png");
