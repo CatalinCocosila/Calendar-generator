@@ -12,55 +12,33 @@ const weekdaysRow = document.getElementById("weekdaysRow");
 const translations = {
   en: {
     months: [
-      "January","February","March","April","May","June",
-      "July","August","September","October","November","December"
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
     ],
-    weekdays: ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
+    weekdays: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
   },
   fr: {
     months: [
-      "Janvier","Février","Mars","Avril","Mai","Juin",
-      "Juillet","Août","Septembre","Octobre","Novembre","Décembre"
+      "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+      "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
     ],
-    weekdays: ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"]
+    weekdays: ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"]
   }
 };
 
-// --- Color templates per season ---
 const colorTemplates = {
-  winter: {
-    gradLeft: "#6dd5ed",
-    gradRight: "#2193b0",
-    text: "#ffffff",
-    weekdays: "#d0e7f9"
-  },
-  spring: {
-    gradLeft: "#a8e063",
-    gradRight: "#56ab2f",
-    text: "#1b4332",
-    weekdays: "#dff6dd"
-  },
-  summer: {
-    gradLeft: "#fceabb",
-    gradRight: "#f8b500",
-    text: "#4a2c00",
-    weekdays: "#fff3cd"
-  },
-  autumn: {
-    gradLeft: "#e96443",
-    gradRight: "#904e95",
-    text: "#ffffff",
-    weekdays: "#f5e0d3"
-  }
+  winter: { gradLeft: "#6dd5ed", gradRight: "#2193b0", text: "#ffffff", weekdays: "#d0e7f9" },
+  spring: { gradLeft: "#a8e063", gradRight: "#56ab2f", text: "#1b4332", weekdays: "#dff6dd" },
+  summer: { gradLeft: "#fceabb", gradRight: "#f8b500", text: "#4a2c00", weekdays: "#fff3cd" },
+  autumn: { gradLeft: "#e96443", gradRight: "#904e95", text: "#ffffff", weekdays: "#f5e0d3" }
 };
 
-// Apply template based on month
 function applyTemplate(month) {
   let season;
-  if ([11, 0, 1].includes(month)) season = "winter";  // Dec, Jan, Feb
-  else if ([2, 3, 4].includes(month)) season = "spring"; // Mar, Apr, May
-  else if ([5, 6, 7].includes(month)) season = "summer"; // Jun, Jul, Aug
-  else season = "autumn"; // Sep, Oct, Nov
+  if ([11, 0, 1].includes(month)) season = "winter";
+  else if ([2, 3, 4].includes(month)) season = "spring";
+  else if ([5, 6, 7].includes(month)) season = "summer";
+  else season = "autumn";
 
   const tpl = colorTemplates[season];
   document.documentElement.style.setProperty("--grad-left", tpl.gradLeft);
@@ -68,14 +46,12 @@ function applyTemplate(month) {
   document.documentElement.style.setProperty("--month-text-color", tpl.text);
   document.documentElement.style.setProperty("--weekdays-color", tpl.weekdays);
 
-  // Sync pickers visually
   gradLeft.value = tpl.gradLeft;
   gradRight.value = tpl.gradRight;
   monthTextColor.value = tpl.text;
   weekdaysColor.value = tpl.weekdays;
 }
 
-// --- Populate years ---
 for (let y = 2025; y <= 2035; y++) {
   const opt = document.createElement("option");
   opt.value = y;
@@ -84,7 +60,6 @@ for (let y = 2025; y <= 2035; y++) {
 }
 yearSelect.value = new Date().getFullYear();
 
-// --- Image upload ---
 document.getElementById("headerPhoto").addEventListener("change", e => {
   const file = e.target.files[0];
   if (file) {
@@ -97,7 +72,6 @@ document.getElementById("headerPhoto").addEventListener("change", e => {
   }
 });
 
-// --- Drag image vertically (mouse + touch) ---
 let isDragging = false;
 let startY = 0;
 let startTop = 0;
@@ -117,7 +91,6 @@ function doDrag(y) {
     const containerHeight = document.getElementById("photoContainer").offsetHeight;
     const imgHeight = headerImage.offsetHeight;
 
-    // Keep image inside container
     if (imgHeight > containerHeight) {
       const minTop = containerHeight - imgHeight;
       if (newTop < minTop) newTop = minTop;
@@ -125,7 +98,6 @@ function doDrag(y) {
     } else {
       newTop = 0;
     }
-
     headerImage.style.top = `${newTop}px`;
   }
 }
@@ -137,25 +109,18 @@ function endDrag() {
   }
 }
 
-// Mouse events
 headerImage.addEventListener("mousedown", e => startDrag(e.clientY));
 document.addEventListener("mousemove", e => doDrag(e.clientY));
 document.addEventListener("mouseup", endDrag);
 
-// Touch events
 headerImage.addEventListener("touchstart", e => {
-  if (e.touches.length === 1) {
-    startDrag(e.touches[0].clientY);
-  }
+  if (e.touches.length === 1) startDrag(e.touches[0].clientY);
 });
 document.addEventListener("touchmove", e => {
-  if (e.touches.length === 1) {
-    doDrag(e.touches[0].clientY);
-  }
+  if (e.touches.length === 1) doDrag(e.touches[0].clientY);
 });
 document.addEventListener("touchend", endDrag);
 
-// --- Generate calendar ---
 function generateCalendar() {
   const lang = langSelect.value;
   const months = translations[lang].months;
@@ -164,20 +129,20 @@ function generateCalendar() {
   const month = parseInt(monthSelect.value);
   const year = parseInt(yearSelect.value);
 
-  document.querySelector(".month-text").textContent = months[month];
+  if (isNaN(month) || isNaN(year)) return;
 
-  // Apply seasonal template
+  document.querySelector(".month-text").textContent = months[month];
   applyTemplate(month);
 
-  // Update weekdays header
   weekdaysRow.innerHTML = "";
+  const headerRow = document.createElement("tr");
   weekdays.forEach(day => {
     const th = document.createElement("th");
     th.textContent = day;
-    weekdaysRow.appendChild(th);
+    headerRow.appendChild(th);
   });
+  weekdaysRow.appendChild(headerRow);
 
-  // Build calendar days
   calendarBody.innerHTML = "";
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -201,7 +166,6 @@ function generateCalendar() {
   }
 }
 
-// --- Color pickers manual overrides ---
 weekdaysColor.addEventListener("input", () => {
   document.documentElement.style.setProperty("--weekdays-color", weekdaysColor.value);
 });
@@ -215,40 +179,41 @@ gradRight.addEventListener("input", () => {
   document.documentElement.style.setProperty("--grad-right", gradRight.value);
 });
 
-// --- Export to PDF (high resolution) ---
 function downloadPDF() {
   const { jsPDF } = window.jspdf;
   const element = document.getElementById("calendarWrapper");
 
-  html2canvas(element, {
-    scale: 3, // high resolution (~300dpi)
-    useCORS: true
-  }).then(canvas => {
+  html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
     const imgData = canvas.toDataURL("image/png");
-
     const pdf = new jsPDF("p", "pt", "letter");
+
     const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
 
-    const imgWidth = pageWidth - 10;
+    const imgWidth = pageWidth;
     const imgHeight = canvas.height * imgWidth / canvas.width;
+    const y = (pageHeight - imgHeight) / 2;
 
-    pdf.addImage(imgData, "PNG", 5, 5, imgWidth, imgHeight);
+    pdf.addImage(imgData, "PNG", 0, y, imgWidth, imgHeight);
     const lang = langSelect.value;
     const months = translations[lang].months;
     pdf.save(`${months[monthSelect.value]} ${yearSelect.value}.pdf`);
   });
 }
 
-// --- Init months in English by default ---
-translations.en.months.forEach((m, i) => {
-  const opt = document.createElement("option");
-  opt.value = i;
-  opt.textContent = m;
-  monthSelect.appendChild(opt);
-});
-monthSelect.value = new Date().getMonth();
+function initCalendar() {
+  monthSelect.innerHTML = "";
+  translations[langSelect.value].months.forEach((m, i) => {
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = m;
+    monthSelect.appendChild(opt);
+  });
+  monthSelect.value = new Date().getMonth();
+  generateCalendar();
+}
+initCalendar();
 
-// --- Handle language switch ---
 langSelect.addEventListener("change", () => {
   const lang = langSelect.value;
   monthSelect.innerHTML = "";
@@ -261,6 +226,3 @@ langSelect.addEventListener("change", () => {
   monthSelect.value = new Date().getMonth();
   generateCalendar();
 });
-
-// --- Initial render ---
-generateCalendar();
