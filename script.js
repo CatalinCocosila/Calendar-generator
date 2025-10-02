@@ -51,8 +51,8 @@ function applyTemplate(month) {
   monthTextColor.value = tpl.text;
   weekdaysColor.value = tpl.weekdays;
 }
-
-for (let y = 2025; y <= 2035; y++) {
+currentYear = new Date().getFullYear();
+for (let y = currentYear; y <= currentYear + 10; y++) {
   const opt = document.createElement("option");
   opt.value = y;
   opt.textContent = y;
@@ -213,6 +213,9 @@ function initCalendar() {
   generateCalendar();
 }
 initCalendar();
+yearSelect.addEventListener("change", generateCalendar);
+
+monthSelect.addEventListener("change", generateCalendar);
 
 langSelect.addEventListener("change", () => {
   const lang = langSelect.value;
